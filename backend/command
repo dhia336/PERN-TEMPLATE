@@ -1,0 +1,1 @@
+npm i express cors jsonwebtoken pg bcryptjs dotenv cookie-parser
