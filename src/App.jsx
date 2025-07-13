@@ -57,12 +57,16 @@ function App() {
   };
 
   return (
-    <div>
-      <button onClick={login}>Login</button>
-      <button onClick={fetchProtectedData}>Fetch Protected Data</button>
-      <button onClick={logout}>Logout</button>
-      {data && <p>{data}</p>}
-    </div>
+    <>
+      <div className='btns'>
+        <button onClick={login}>Login</button>
+        <button onClick={fetchProtectedData}>Fetch Protected Data</button>
+        <button onClick={logout}>Logout</button>
+        <br />
+
+      </div>
+      <h1>{data && <p>{data}</p>}</h1>
+    </>
   );
 }
 
