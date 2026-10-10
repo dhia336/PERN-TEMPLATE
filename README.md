@@ -2,72 +2,87 @@
 
 A learning project demonstrating a React/Vite frontend and an Express/PostgreSQL backend with password hashing, short-lived access tokens, refresh-token cookies, and a protected route.
 
-> **Status:** Educational starter project, not a production-ready authentication system. Review the security notes before using it for a real application.
+> **Status:** Educational starter project, not production-ready. Review the security limitations below before adapting it for a real application.
 
 ## Stack
 
 - React and Vite
 - Node.js and Express
-- PostgreSQL (pg)
-- bcryptjs for password hashing
-- jsonwebtoken for JWTs
-- cookie-parser, cors, and dotenv
+- PostgreSQL (`pg`)
+- `bcryptjs` for password hashing
+- `jsonwebtoken` for JWTs
+- `cookie-parser`, `cors`, and `dotenv`
 
 ## Repository layout
 
 - Root: React/Vite frontend
-- backend/: Express API and database connection
-- backend/server.js: registration, login, refresh, logout, and protected-route examples
+- `backend/`: Express API and PostgreSQL connection
+- `backend/server.js`: registration, login, refresh, logout, and protected-route examples
 
 ## Requirements
 
 - Node.js and npm
-- PostgreSQL
-- A PostgreSQL database with the tables expected by backend/db.js
+- PostgreSQL with the `users` and `refresh_tokens` tables expected by the backend
 
 ## Setup
 
-### 1. Configure the backend
+### 1. Configure PostgreSQL
 
-    cd backend
-    npm install
+Create a database and the required tables. Check the schema used by your project before running the server.
 
-Create backend/.env with values appropriate for your local PostgreSQL setup:
+### 2. Configure the backend
 
-    PORT=5000
-    DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/DATABASE_NAME
-    JWT_SECRET=replace-with-a-long-random-secret
-    REFRESH_SECRET=replace-with-a-different-long-random-secret
-    NODE_ENV=development
+```bash
+cd backend
+npm install
+```
 
-Check backend/db.js and the database schema in the repository to confirm which database environment variables and tables the implementation expects. Never commit real secrets.
+Create `backend/.env`:
 
-Start the API from the backend/ directory:
+```dotenv
+PORT=5000
+DB_USER=your_postgres_user
+DB_HOST=localhost
+DB_NAME=your_database_name
+DB_PORT=5432
+JWT_SECRET=replace_with_a_long_random_secret
+REFRESH_SECRET=use_a_different_long_random_secret
+CLIENT_ORIGIN=http://localhost:5173
+NODE_ENV=development
+```
 
-    npm run dev
+The current `backend/db.js` uses these `DB_*` variables and currently configures an empty PostgreSQL password. Adjust it to read a `DB_PASSWORD` environment variable before using a password-protected database; never commit real credentials.
 
-### 2. Configure and start the frontend
+Start the backend from `backend/`:
 
-From the repository root, in a second terminal:
+```bash
+npm run dev
+```
 
-    npm install
-    npm run dev
+### 3. Start the frontend
 
-Vite normally serves the frontend at http://localhost:5173. The example frontend calls the API at http://localhost:5000.
+In a second terminal, from the repository root:
 
-## Example routes
+```bash
+npm install
+npm run dev
+```
 
-- POST /register — create a user
-- POST /login — authenticate and issue tokens
-- POST /refresh — exchange a valid refresh token for a new token pair
-- POST /logout — revoke a refresh token
-- GET /protected — demonstrate access-token verification and role checks
+Vite normally serves the frontend at `http://localhost:5173`; the API defaults to `http://localhost:5000`. Set `VITE_API_URL` in a root `.env` file if the API runs elsewhere.
 
-## Security limitations
+## Example API routes
 
-- The frontend currently contains demo login credentials; replace this with a real login form before presenting the app as a reusable template.
-- Registration currently accepts a role from the request body. A public registration endpoint must not allow users to assign themselves privileged roles.
-- Review refresh-token rotation, cookie clearing, CSRF protections, rate limiting, validation, database migrations, and secret configuration before production use.
-- The example protected endpoint is admin-only; adjust authorization deliberately rather than removing the role check.
+- `POST /register` — create a standard user
+- `POST /login` — authenticate and issue tokens
+- `POST /refresh` — exchange a valid refresh token for a new token pair
+- `POST /logout` — revoke the current refresh token
+- `GET /protected` — demonstrate access-token verification and an admin-only role check
 
-This repository demonstrates authentication concepts and needs further hardening before production use.
+## Security notes
+
+- Public registration must not allow users to assign themselves privileged roles.
+- Use unique, strong JWT secrets and HTTPS in production.
+- Review CSRF protections, rate limiting, input validation, token rotation/reuse detection, database migrations, and error handling before production use.
+- The protected example is admin-only; configure authorization deliberately for your application.
+
+This project demonstrates authentication concepts and needs further testing and hardening before production use.
