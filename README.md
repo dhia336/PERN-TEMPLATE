@@ -1,99 +1,73 @@
-# PERN Template
+# PERN Authentication Template
 
-A minimal PERN (PostgreSQL, Express, React, Node.js) full-stack authentication template with JWT, refresh tokens, and role-based access.
+A learning project demonstrating a React/Vite frontend and an Express/PostgreSQL backend with password hashing, short-lived access tokens, refresh-token cookies, and a protected route.
 
-## Features
+> **Status:** Educational starter project, not a production-ready authentication system. Review the security notes before using it for a real application.
 
-- React frontend (Vite, HMR)
-- Express backend with JWT authentication
-- Refresh tokens (HTTP-only cookies)
-- Role-based protected routes (admin/user)
-- PostgreSQL database integration
-- Secure password hashing (bcryptjs)
-- ESLint configuration for code quality
+## Stack
 
-## Project Structure
+- React and Vite
+- Node.js and Express
+- PostgreSQL (pg)
+- bcryptjs for password hashing
+- jsonwebtoken for JWTs
+- cookie-parser, cors, and dotenv
 
-```bash
-.
-├── client              # React frontend
-│   ├── public          # Static files
-│   └── src             # React components and hooks
-│
-├── server              # Express backend
-│   ├── config          # Configuration files
-│   ├── controllers     # Route controllers
-│   ├── middleware      # Custom middleware
-│   ├── models          # Database models
-│   ├── routes          # API routes
-│   └── utils           # Utility functions
-│
-├── .env                # Environment variables
-├── .gitignore          # Ignored files in Git
-├── package.json        # Project metadata and dependencies
-└── README.md           # Project documentation
-```
+## Repository layout
 
-## Getting Started
+- Root: React/Vite frontend
+- backend/: Express API and database connection
+- backend/server.js: registration, login, refresh, logout, and protected-route examples
 
-To get a local copy up and running, follow these simple steps.
+## Requirements
 
-### Prerequisites
-
-- Node.js
-- npm or Yarn
+- Node.js and npm
 - PostgreSQL
+- A PostgreSQL database with the tables expected by backend/db.js
 
-### Installation
+## Setup
 
-1. Clone the repo
+### 1. Configure the backend
 
-   ```bash
-   git clone https://github.com/dhia336/PERN-TEMPLATE.git
-   ```
+    cd backend
+    npm install
 
-2. Install client dependencies
+Create backend/.env with values appropriate for your local PostgreSQL setup:
 
-   ```bash
-   npm install
-   ```
+    PORT=5000
+    DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/DATABASE_NAME
+    JWT_SECRET=replace-with-a-long-random-secret
+    REFRESH_SECRET=replace-with-a-different-long-random-secret
+    NODE_ENV=development
 
-3. Install server dependencies
+Check backend/db.js and the database schema in the repository to confirm which database environment variables and tables the implementation expects. Never commit real secrets.
 
-   ```bash
-   cd backend
-   npm install
-   ```
+Start the API from the backend/ directory:
 
-4. Configure environment variables
+    npm run dev
 
-   Rename `.env.example` to `.env` in the server folder and update the values accordingly.
+### 2. Configure and start the frontend
 
-5. Run the development servers
+From the repository root, in a second terminal:
 
-   ```bash
-   # In the server folder
-   npm run dev
+    npm install
+    npm run dev
 
-   # In the client folder
-   npm run dev
-   ```
+Vite normally serves the frontend at http://localhost:5173. The example frontend calls the API at http://localhost:5000.
 
-   The client app will be running on [http://localhost:3000](http://localhost:3000) and the server on [http://localhost:5000](http://localhost:5000) by default.
+## Example routes
 
-### Usage
+- POST /register — create a user
+- POST /login — authenticate and issue tokens
+- POST /refresh — exchange a valid refresh token for a new token pair
+- POST /logout — revoke a refresh token
+- GET /protected — demonstrate access-token verification and role checks
 
-- Register a new user (admin or regular)
-- Login to obtain access and refresh tokens
-- Access protected routes based on your role
-- Refresh your access token using the refresh token
+## Security limitations
 
-## Acknowledgements
+- The frontend currently contains demo login credentials; replace this with a real login form before presenting the app as a reusable template.
+- Registration currently accepts a role from the request body. A public registration endpoint must not allow users to assign themselves privileged roles.
+- Review refresh-token rotation, cookie clearing, CSRF protections, rate limiting, validation, database migrations, and secret configuration before production use.
+- The example protected endpoint is admin-only; adjust authorization deliberately rather than removing the role check.
 
-- [Vite](https://vitejs.dev/) - Next Generation Frontend Tooling
-- [React](https://reactjs.org/) - A JavaScript library for building user interfaces
-- [Express](https://expressjs.com/) - Fast, unopinionated, minimalist web framework for Node.js
-- [Prisma](https://www.prisma.io/) - Next-generation ORM for Node.js and TypeScript
-- [bcryptjs](https://github.com/dcodeIO/bcrypt.js) - Optimized bcrypt in JavaScript with zero dependencies
-- [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) - JSON Web Token implementation for node.js
-- [dotenv](https://github.com/motdotla/dotenv) - Loads environment variables from .env file
+This repository demonstrates authentication concepts and needs further hardening before production use.
